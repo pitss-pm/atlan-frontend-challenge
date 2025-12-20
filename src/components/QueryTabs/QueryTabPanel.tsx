@@ -16,6 +16,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { SQLEditor } from '../Editor';
 import type { QueryTab } from '../../types';
 import { formatShortcut } from '../../hooks/useKeyboardShortcuts';
+import SaveQueryDialog from '../SavedQueries/SaveQueryDialog';
+import ShareDialog from '../ShareView/ShareDialog';
 
 interface QueryTabPanelProps {
   tab: QueryTab;
@@ -57,11 +59,6 @@ const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
     const handleCopySQL = useCallback(() => {
       navigator.clipboard.writeText(tab.sql);
     }, [tab.sql]);
-
-    void saveDialogOpen;
-    void shareDialogOpen;
-    void shareUrl;
-    void handleSave;
 
     return (
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -159,6 +156,20 @@ const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
             <Typography variant="body2">{tab.error}</Typography>
           </Box>
         )}
+
+        {}
+        <SaveQueryDialog
+          open={saveDialogOpen}
+          onClose={() => setSaveDialogOpen(false)}
+          onSave={handleSave}
+          initialName={tab.name}
+        />
+
+        <ShareDialog
+          open={shareDialogOpen}
+          onClose={() => setShareDialogOpen(false)}
+          shareUrl={shareUrl}
+        />
       </Box>
     );
   }
