@@ -49,4 +49,3 @@ export const DEFAULT_LAYOUTS: PanelLayout = {
     ],
   },
 };
-

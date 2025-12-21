@@ -98,6 +98,26 @@ export function saveQuery(name: string, sql: string, notes: string = ''): SavedQ
   return newQuery;
 }
 
+export function updateSavedQuery(
+  id: string,
+  updates: Partial<Omit<SavedQuery, 'id' | 'createdAt'>>
+): SavedQuery | null {
+  const savedQueries = storageService.get<SavedQuery[]>(STORAGE_KEYS.SAVED_QUERIES, []);
+
+  const index = savedQueries.findIndex((q) => q.id === id);
+  if (index === -1) return null;
+
+  const updatedQuery = {
+    ...savedQueries[index],
+    ...updates,
+    updatedAt: Date.now(),
+  };
+
+  savedQueries[index] = updatedQuery;
+  storageService.set(STORAGE_KEYS.SAVED_QUERIES, savedQueries);
+  return updatedQuery;
+}
+
 export function deleteSavedQuery(id: string): boolean {
   const savedQueries = storageService.get<SavedQuery[]>(STORAGE_KEYS.SAVED_QUERIES, []);
 
@@ -111,4 +131,3 @@ export function deleteSavedQuery(id: string): boolean {
 export function getSavedQueries(): SavedQuery[] {
   return storageService.get<SavedQuery[]>(STORAGE_KEYS.SAVED_QUERIES, []);
 }
-

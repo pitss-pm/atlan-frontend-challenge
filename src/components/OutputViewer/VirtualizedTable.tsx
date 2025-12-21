@@ -34,7 +34,7 @@ interface VirtualizedTableProps {
 const ROW_HEIGHT = 36;
 const HEADER_HEIGHT = 42;
 const MIN_LIST_HEIGHT = 100;
-const LOAD_MORE_THRESHOLD = 10;
+const LOAD_MORE_THRESHOLD = 10; // Load more when within 10 rows of the end
 
 interface ColumnHeaderProps {
   column: ColumnDefinition;
@@ -322,9 +322,18 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = memo(
     return (
       <Box ref={containerRef} sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         {}
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 0.5 }}>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'flex-end',
+            mb: 0.5,
+          }}
+        >
           <Tooltip title="Show/Hide Columns">
-            <IconButton size="small" onClick={(e) => setMenuAnchor(e.currentTarget)}>
+            <IconButton
+              size="small"
+              onClick={(e) => setMenuAnchor(e.currentTarget)}
+            >
               <ViewColumnIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -334,7 +343,11 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = memo(
             onClose={() => setMenuAnchor(null)}
           >
             {columns.map((column) => (
-              <MenuItem key={column.key} onClick={() => handleVisibilityChange(column.key)} dense>
+              <MenuItem
+                key={column.key}
+                onClick={() => handleVisibilityChange(column.key)}
+                dense
+              >
                 <Checkbox checked={column.visible} size="small" />
                 <ListItemText primary={column.label} />
               </MenuItem>
@@ -375,7 +388,12 @@ const VirtualizedTable: React.FC<VirtualizedTableProps> = memo(
           </Box>
 
           {}
-          <Box sx={{ overflowX: 'auto', height: listHeight }}>
+          <Box
+            sx={{
+              overflowX: 'auto',
+              height: listHeight,
+            }}
+          >
             <Box sx={{ minWidth: totalWidth }}>
               <List
                 rowComponent={VirtualizedRow}

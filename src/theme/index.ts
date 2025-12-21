@@ -180,4 +180,3 @@ export const darkTheme = createTheme({
 });
 
 export type ThemeMode = 'light' | 'dark';
-

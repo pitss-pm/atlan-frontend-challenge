@@ -50,4 +50,3 @@ export interface SharedQuery {
 }
 
 export type ExecutionStatus = 'idle' | 'executing' | 'success' | 'error' | 'cancelled';
-

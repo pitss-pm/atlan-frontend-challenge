@@ -65,3 +65,19 @@ function generateShareId(): string {
   return uuidv4().slice(0, 8);
 }
 
+export function cleanupExpiredShares(): number {
+  const sharedQueries = storageService.get<SharedQuery[]>(
+    STORAGE_KEYS.SHARED_QUERIES,
+    []
+  );
+
+  const now = Date.now();
+  const validShares = sharedQueries.filter((s) => s.expiresAt > now);
+  const removedCount = sharedQueries.length - validShares.length;
+
+  if (removedCount > 0) {
+    storageService.set(STORAGE_KEYS.SHARED_QUERIES, validShares);
+  }
+
+  return removedCount;
+}

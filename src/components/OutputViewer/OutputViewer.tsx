@@ -92,7 +92,12 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
       return (
         <Paper
           elevation={0}
-          sx={{ height: '100%', p: 2, display: 'flex', flexDirection: 'column' }}
+          sx={{
+            height: '100%',
+            p: 2,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
         >
           <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
             <Skeleton variant="rectangular" width={100} height={32} />
@@ -156,7 +161,12 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
     return (
       <Paper
         elevation={0}
-        sx={{ height: '100%', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}
+        sx={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
+        }}
       >
         {}
         <Stack
@@ -170,6 +180,7 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
             Results
           </Typography>
 
+          {}
           <Chip
             label={
               hasMoreRows
@@ -188,6 +199,7 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
             variant="outlined"
           />
 
+          {}
           <FormControl size="small" sx={{ minWidth: 110 }}>
             <InputLabel id="load-count-label" sx={{ fontSize: '0.75rem' }}>
               Batch size
@@ -207,6 +219,7 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
             </Select>
           </FormControl>
 
+          {}
           {isLoadingMore && (
             <Typography
               variant="caption"
@@ -220,7 +233,7 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
                 },
               }}
             >
-              Loading more...
+              ⏳ Loading more...
             </Typography>
           )}
 
@@ -248,7 +261,23 @@ const OutputViewer: React.FC<OutputViewerProps> = memo(
               variant={isLoadingMore ? 'buffer' : 'determinate'}
               value={loadProgress}
               valueBuffer={isLoadingMore ? Math.min(loadProgress + 10, 100) : loadProgress}
-              sx={{ height: 4, borderRadius: 2 }}
+              sx={{
+                height: 4,
+                borderRadius: 2,
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'dark' ? 'grey.800' : 'grey.200',
+                '& .MuiLinearProgress-bar': {
+                  borderRadius: 2,
+                  transition: isLoadingMore ? 'none' : 'transform 0.3s ease',
+                },
+                '& .MuiLinearProgress-dashed': {
+                  animation: 'dash 1s ease-in-out infinite',
+                },
+                '@keyframes dash': {
+                  '0%': { backgroundPosition: '0 0' },
+                  '100%': { backgroundPosition: '40px 0' },
+                },
+              }}
             />
             <Typography
               variant="caption"
