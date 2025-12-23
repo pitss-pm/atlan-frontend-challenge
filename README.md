@@ -73,7 +73,7 @@ A browser-based SQL workspace built for data engineers.
 
 ### Libraries
 
-| Library                | Why            |
+| Library                | Use case       |
 |------------------------|----------------|
 | `@monaco-editor/react` | Code editor    |
 | `react-window`         | Virtualizatio  |
@@ -88,7 +88,7 @@ A browser-based SQL workspace built for data engineers.
 
 ## Scripts
 
-| Command | What It Does |
+| Command | Use case |
 |---------|--------------|
 | `npm run dev` | Start dev server |
 | `npm run build` | Production build |
