@@ -3,7 +3,12 @@ Demo: https://atlan-frontend-challenge-iota.vercel.app/
 
 A browser-based SQL workspace built for data engineers.
 
-<iframe src="(https://drive.google.com/file/d/1BXFdvVGON5XpjCSxFTZ6Hwb5ykfna0jZ/view" width="640" height="480" allow="autoplay" allowfullscreen></iframe>
+#### Quick video walkthrough
+<p align="center">
+  <a href="https://youtu.be/pELs9fPESws">
+    <img src="https://img.youtube.com/vi/pELs9fPESws/maxresdefault.jpg" width="900" />
+  </a>
+</p>
 
 ## Overview
 
