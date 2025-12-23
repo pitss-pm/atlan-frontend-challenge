@@ -6,7 +6,8 @@ import { useLocalStorage } from './useLocalStorage';
 const DEFAULT_SQL = `-- Write your SQL query here
 -- Try: SELECT * FROM employees (10,000 rows available)
 SELECT * FROM employees
-WHERE is_active = true;`;
+WHERE is_active = true;
+`;
 
 function createNewTab(name?: string): QueryTab {
   return {

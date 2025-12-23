@@ -1,17 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
+import { storageService } from '../services/storageService';
 
 export function useLocalStorage<T>(
   key: string,
   initialValue: T
 ): [T, (value: T | ((prev: T) => T)) => void] {
   const [storedValue, setStoredValue] = useState<T>(() => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? (JSON.parse(item) as T) : initialValue;
-    } catch (error) {
-      console.warn(`Error reading localStorage key "${key}":`, error);
-      return initialValue;
-    }
+    return storageService.get(key as any, initialValue);
   });
 
   const setValue = useCallback(
@@ -19,7 +14,7 @@ export function useLocalStorage<T>(
       try {
         setStoredValue((prev) => {
           const valueToStore = value instanceof Function ? value(prev) : value;
-          localStorage.setItem(key, JSON.stringify(valueToStore));
+          storageService.set(key as any, valueToStore);
           return valueToStore;
         });
       } catch (error) {
@@ -40,7 +35,17 @@ export function useLocalStorage<T>(
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    
+    const unsubscribe = storageService.subscribe((k, v) => {
+      if (k === key) {
+        setStoredValue(v);
+      }
+    });
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      unsubscribe();
+    };
   }, [key]);
 
   return [storedValue, setValue];

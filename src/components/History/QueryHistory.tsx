@@ -23,11 +23,11 @@ import HistoryIcon from '@mui/icons-material/History';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import type { QueryHistoryItem, SavedQuery } from '../../types';
 import {
-  getQueryHistory,
-  getSavedQueries,
   deleteSavedQuery,
   clearQueryHistory,
+  STORAGE_KEYS,
 } from '../../services';
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 interface QueryHistoryProps {
   onSelectQuery: (sql: string) => void;
@@ -38,15 +38,15 @@ const QueryHistory: React.FC<QueryHistoryProps> = memo(
   ({ onSelectQuery, onRunQuery }) => {
     const [activeTab, setActiveTab] = useState(0);
     const [searchTerm, setSearchTerm] = useState('');
-    const [history, setHistory] = useState<QueryHistoryItem[]>(() => getQueryHistory());
-    const [savedQueries, setSavedQueries] = useState<SavedQuery[]>(() =>
-      getSavedQueries()
-    );
 
-    const refreshData = useCallback(() => {
-      setHistory(getQueryHistory());
-      setSavedQueries(getSavedQueries());
-    }, []);
+    const [history] = useLocalStorage<QueryHistoryItem[]>(
+      STORAGE_KEYS.QUERY_HISTORY,
+      []
+    );
+    const [savedQueries] = useLocalStorage<SavedQuery[]>(
+      STORAGE_KEYS.SAVED_QUERIES,
+      []
+    );
 
     const filteredHistory = useMemo(() => {
       if (!searchTerm) return history;
@@ -70,12 +70,10 @@ const QueryHistory: React.FC<QueryHistoryProps> = memo(
 
     const handleDeleteSaved = useCallback((id: string) => {
       deleteSavedQuery(id);
-      setSavedQueries(getSavedQueries());
     }, []);
 
     const handleClearHistory = useCallback(() => {
       clearQueryHistory();
-      setHistory([]);
     }, []);
 
     const formatTime = useCallback((timestamp: number) => {
@@ -299,9 +297,6 @@ const QueryHistory: React.FC<QueryHistoryProps> = memo(
             </List>
           )}
         </Box>
-
-        {}
-        <Box sx={{ display: 'none' }} onClick={refreshData} />
       </Box>
     );
   }

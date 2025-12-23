@@ -9,6 +9,9 @@ const STORAGE_KEYS = {
 } as const;
 
 type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
+type StorageListener = (key: string, value: any) => void;
+
+const listeners = new Set<StorageListener>();
 
 export const storageService = {
   
@@ -28,7 +31,12 @@ export const storageService = {
   
   set<T>(key: StorageKey, value: T): boolean {
     try {
-      localStorage.setItem(key, JSON.stringify(value));
+      const stringifiedValue = JSON.stringify(value);
+      localStorage.setItem(key, stringifiedValue);
+      
+      
+      listeners.forEach((listener) => listener(key, value));
+      
       return true;
     } catch (error) {
       console.error(`Failed to save to storage key "${key}":`, error);
@@ -40,6 +48,7 @@ export const storageService = {
   remove(key: StorageKey): void {
     try {
       localStorage.removeItem(key);
+      listeners.forEach((listener) => listener(key, null));
     } catch (error) {
       console.warn(`Failed to remove storage key "${key}":`, error);
     }
@@ -50,6 +59,13 @@ export const storageService = {
     Object.values(STORAGE_KEYS).forEach((key) => {
       this.remove(key);
     });
+  },
+
+  subscribe(listener: StorageListener): () => void {
+    listeners.add(listener);
+    return () => {
+      listeners.delete(listener);
+    };
   },
 };
 

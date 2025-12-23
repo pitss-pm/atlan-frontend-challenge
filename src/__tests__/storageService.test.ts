@@ -3,6 +3,7 @@
  * Tests localStorage abstraction and persistence logic
  */
 
+import { jest } from '@jest/globals';
 import { storageService, STORAGE_KEYS } from '../services/storageService';
 
 describe('storageService', () => {
@@ -95,6 +96,39 @@ describe('storageService', () => {
       expect(storageService.get(STORAGE_KEYS.THEME, 'default')).toBe('default');
       expect(storageService.get(STORAGE_KEYS.QUERY_TABS, [])).toEqual([]);
       expect(storageService.get(STORAGE_KEYS.LAYOUT, null)).toBeNull();
+    });
+  });
+
+  describe('subscribe', () => {
+    it('should call listener when set is called', () => {
+      const listener = jest.fn();
+      const unsubscribe = storageService.subscribe(listener);
+
+      const testData = { theme: 'dark' };
+      storageService.set(STORAGE_KEYS.THEME, testData);
+
+      expect(listener).toHaveBeenCalledWith(STORAGE_KEYS.THEME, testData);
+      unsubscribe();
+    });
+
+    it('should call listener when remove is called', () => {
+      const listener = jest.fn();
+      const unsubscribe = storageService.subscribe(listener);
+
+      storageService.remove(STORAGE_KEYS.THEME);
+
+      expect(listener).toHaveBeenCalledWith(STORAGE_KEYS.THEME, null);
+      unsubscribe();
+    });
+
+    it('should not call listener after unsubscribe', () => {
+      const listener = jest.fn();
+      const unsubscribe = storageService.subscribe(listener);
+
+      unsubscribe();
+      storageService.set(STORAGE_KEYS.THEME, 'dark');
+
+      expect(listener).not.toHaveBeenCalled();
     });
   });
 });
