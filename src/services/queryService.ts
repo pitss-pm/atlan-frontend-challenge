@@ -1,9 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { QueryResult, QueryHistoryItem, SavedQuery } from '../types';
-import { generateMockDataAsync, detectQueryType, preloadSampleData } from '../utils/mockData';
+import { generateMockDataAsync, detectQueryType } from '../utils/mockData';
 import { storageService, STORAGE_KEYS } from './storageService';
-
-preloadSampleData();
 
 const executionControllers = new Map<string, AbortController>();
 

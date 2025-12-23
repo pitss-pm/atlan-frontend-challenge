@@ -18,33 +18,50 @@ export function useKeyboardShortcuts({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       const isMod = event.metaKey || event.ctrlKey;
+      const key = event.key.toLowerCase();
 
       if (isMod && event.key === 'Enter') {
-        event.preventDefault();
-        onRunQuery?.();
+        if (onRunQuery) {
+          event.preventDefault();
+          event.stopPropagation();
+          onRunQuery();
+        }
         return;
       }
 
-      if (isMod && event.key === 's') {
-        event.preventDefault();
-        onSaveQuery?.();
+      if (isMod && key === 's') {
+        if (onSaveQuery) {
+          event.preventDefault();
+          event.stopPropagation();
+          onSaveQuery();
+        }
         return;
       }
 
-      if (isMod && event.key === '/') {
-        onToggleComment?.();
+      if (isMod && key === '/') {
+        if (onToggleComment) {
+          event.preventDefault();
+          event.stopPropagation();
+          onToggleComment();
+        }
         return;
       }
 
-      if (isMod && event.key === 't') {
-        event.preventDefault();
-        onNewTab?.();
+      if (isMod && key === 't') {
+        if (onNewTab) {
+          event.preventDefault();
+          event.stopPropagation();
+          onNewTab();
+        }
         return;
       }
 
-      if (isMod && event.key === 'w') {
-        event.preventDefault();
-        onCloseTab?.();
+      if (isMod && key === 'w') {
+        if (onCloseTab) {
+          event.preventDefault();
+          event.stopPropagation();
+          onCloseTab();
+        }
         return;
       }
     },
@@ -52,8 +69,8 @@ export function useKeyboardShortcuts({
   );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [handleKeyDown]);
 }
 

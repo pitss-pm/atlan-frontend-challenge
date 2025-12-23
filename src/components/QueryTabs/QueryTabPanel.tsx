@@ -16,7 +16,6 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { SQLEditor } from '../Editor';
 import type { QueryTab } from '../../types';
 import { formatShortcut } from '../../hooks/useKeyboardShortcuts';
-import SaveQueryDialog from '../SavedQueries/SaveQueryDialog';
 import ShareDialog from '../ShareView/ShareDialog';
 
 interface QueryTabPanelProps {
@@ -26,11 +25,23 @@ interface QueryTabPanelProps {
   onCancelQuery: () => void;
   onSaveQuery: (name: string, notes: string) => void;
   onShare: () => string;
+  onOpenSaveDialog: () => void;
+  onNewTab: () => void;
+  onCloseTab: () => void;
 }
 
 const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
-  ({ tab, onSQLChange, onRunQuery, onCancelQuery, onSaveQuery, onShare }) => {
-    const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  ({
+    tab,
+    onSQLChange,
+    onRunQuery,
+    onCancelQuery,
+    onSaveQuery,
+    onShare,
+    onOpenSaveDialog,
+    onNewTab,
+    onCloseTab,
+  }) => {
     const [shareDialogOpen, setShareDialogOpen] = useState(false);
     const [shareUrl, setShareUrl] = useState('');
 
@@ -41,14 +52,6 @@ const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
         onRunQuery();
       }
     }, [tab.isExecuting, onRunQuery, onCancelQuery]);
-
-    const handleSave = useCallback(
-      (name: string, notes: string) => {
-        onSaveQuery(name, notes);
-        setSaveDialogOpen(false);
-      },
-      [onSaveQuery]
-    );
 
     const handleShare = useCallback(() => {
       const url = onShare();
@@ -85,7 +88,7 @@ const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
             <span>
               <IconButton
                 size="small"
-                onClick={() => setSaveDialogOpen(true)}
+                onClick={onOpenSaveDialog}
                 disabled={!tab.sql.trim()}
               >
                 <SaveIcon fontSize="small" />
@@ -139,7 +142,14 @@ const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
 
         {}
         <Box sx={{ flex: 1, minHeight: 0 }}>
-          <SQLEditor value={tab.sql} onChange={onSQLChange} onRunQuery={onRunQuery} />
+          <SQLEditor
+            value={tab.sql}
+            onChange={onSQLChange}
+            onRunQuery={onRunQuery}
+            onSaveQuery={onOpenSaveDialog}
+            onNewTab={onNewTab}
+            onCloseTab={onCloseTab}
+          />
         </Box>
 
         {}
@@ -158,13 +168,6 @@ const QueryTabPanel: React.FC<QueryTabPanelProps> = memo(
         )}
 
         {}
-        <SaveQueryDialog
-          open={saveDialogOpen}
-          onClose={() => setSaveDialogOpen(false)}
-          onSave={handleSave}
-          initialName={tab.name}
-        />
-
         <ShareDialog
           open={shareDialogOpen}
           onClose={() => setShareDialogOpen(false)}

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useMemo, useRef, useEffect, useState } from 'react';
 import { Box, AppBar, Toolbar, Typography, Stack } from '@mui/material';
 import StorageIcon from '@mui/icons-material/Storage';
 import {
@@ -9,6 +9,7 @@ import {
   QueryHistory,
   ThemeToggle,
   ErrorBoundary,
+  SaveQueryDialog,
 } from '../components';
 import { useQueryTabs, useQueryExecution, useKeyboardShortcuts } from '../hooks';
 import { saveQuery, createShare, getShareUrl } from '../services';
@@ -33,6 +34,8 @@ const HomePage: React.FC<HomePageProps> = ({ themeMode, onToggleTheme }) => {
     loadSQL,
   } = useQueryTabs();
 
+  const [isSaveDialogOpen, setIsSaveDialogOpen] = useState(false);
+
   const { runQuery, cancelQuery, isExecuting } = useQueryExecution({
     activeTab,
     setTabExecuting,
@@ -48,6 +51,7 @@ const HomePage: React.FC<HomePageProps> = ({ themeMode, onToggleTheme }) => {
     (name: string, notes: string) => {
       if (activeTab?.sql) {
         saveQuery(name, activeTab.sql, notes);
+        setIsSaveDialogOpen(false);
       }
     },
     [activeTab]
@@ -71,12 +75,23 @@ const HomePage: React.FC<HomePageProps> = ({ themeMode, onToggleTheme }) => {
     [loadSQL]
   );
 
+  const handleSaveShortcut = useCallback(() => {
+    if (activeTab?.sql) {
+      setIsSaveDialogOpen(true);
+    }
+  }, [activeTab?.sql]);
+
+  const handleCloseTabShortcut = useCallback(() => {
+    if (activeTab) {
+      closeTab(activeTab.id);
+    }
+  }, [activeTab, closeTab]);
+
   useKeyboardShortcuts({
     onRunQuery: runQuery,
-    onSaveQuery: () => {
-    },
+    onSaveQuery: handleSaveShortcut,
     onNewTab: addTab,
-    onCloseTab: () => activeTab && closeTab(activeTab.id),
+    onCloseTab: handleCloseTabShortcut,
   });
 
   const panels = useMemo(
@@ -102,6 +117,9 @@ const HomePage: React.FC<HomePageProps> = ({ themeMode, onToggleTheme }) => {
                   onCancelQuery={cancelQuery}
                   onSaveQuery={handleSaveQuery}
                   onShare={handleShare}
+                  onOpenSaveDialog={() => setIsSaveDialogOpen(true)}
+                  onNewTab={addTab}
+                  onCloseTab={() => closeTab(activeTab.id)}
                 />
               </Box>
             )}
@@ -201,6 +219,13 @@ const HomePage: React.FC<HomePageProps> = ({ themeMode, onToggleTheme }) => {
       <Box sx={{ flex: 1, overflow: 'hidden', p: 1.5, minHeight: 0 }}>
         <DraggableLayout panels={panels} />
       </Box>
+
+      <SaveQueryDialog
+        open={isSaveDialogOpen}
+        onClose={() => setIsSaveDialogOpen(false)}
+        onSave={handleSaveQuery}
+        initialName={activeTab?.name}
+      />
     </Box>
   );
 };

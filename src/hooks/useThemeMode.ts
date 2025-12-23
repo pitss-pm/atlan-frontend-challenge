@@ -3,18 +3,8 @@ import { lightTheme, darkTheme } from '../theme';
 import type { ThemeMode } from '../theme';
 import { useLocalStorage } from './useLocalStorage';
 
-function getSystemTheme(): ThemeMode {
-  if (typeof window !== 'undefined') {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  return 'light';
-}
-
 export function useThemeMode() {
-  const [mode, setMode] = useLocalStorage<ThemeMode>(
-    'sql_runner_theme',
-    getSystemTheme()
-  );
+  const [mode, setMode] = useLocalStorage<ThemeMode>('sql_runner_theme','light');
 
   const toggleTheme = useCallback(() => {
     setMode((prev) => (prev === 'light' ? 'dark' : 'light'));

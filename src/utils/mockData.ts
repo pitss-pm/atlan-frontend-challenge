@@ -60,11 +60,6 @@ function getSampleDataSync(): SampleDataFile | null {
   return cachedSampleData;
 }
 
-export function preloadSampleData(): void {
-  loadSampleData().catch(() => {
-  });
-}
-
 export function detectQueryType(sql: string): QueryType {
   const lowerSql = sql.toLowerCase();
 

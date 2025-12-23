@@ -22,9 +22,21 @@ function createNewTab(name?: string): QueryTab {
 }
 
 export function useQueryTabs() {
-  const [tabs, setTabs] = useLocalStorage<QueryTab[]>('sql_runner_tabs', [
-    createNewTab('Query 1'),
-  ]);
+  const [tabs, setTabs] = useLocalStorage<QueryTab[]>(
+    'sql_runner_tabs',
+    [createNewTab('Query 1')],
+    useCallback(
+      (tabs: QueryTab[]) =>
+        tabs.map((tab) => ({
+          ...tab,
+          result: null,
+          error: null,
+          isExecuting: false,
+          executedAt: null,
+        })),
+      []
+    )
+  );
   const [activeTabId, setActiveTabId] = useLocalStorage<string>(
     'sql_runner_active_tab',
     tabs[0]?.id || ''

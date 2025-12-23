@@ -9,7 +9,7 @@ const STORAGE_KEYS = {
 } as const;
 
 type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
-type StorageListener = (key: string, value: any) => void;
+type StorageListener = (key: string, value: any, senderId?: string) => void;
 
 const listeners = new Set<StorageListener>();
 
@@ -29,13 +29,19 @@ export const storageService = {
   },
 
   
-  set<T>(key: StorageKey, value: T): boolean {
+  set<T>(key: StorageKey, value: T, senderId?: string): boolean {
     try {
       const stringifiedValue = JSON.stringify(value);
       localStorage.setItem(key, stringifiedValue);
       
       
-      listeners.forEach((listener) => listener(key, value));
+      listeners.forEach((listener) => {
+        if (senderId !== undefined) {
+          listener(key, value, senderId);
+        } else {
+          listener(key, value);
+        }
+      });
       
       return true;
     } catch (error) {
@@ -45,10 +51,16 @@ export const storageService = {
   },
 
   
-  remove(key: StorageKey): void {
+  remove(key: StorageKey, senderId?: string): void {
     try {
       localStorage.removeItem(key);
-      listeners.forEach((listener) => listener(key, null));
+      listeners.forEach((listener) => {
+        if (senderId !== undefined) {
+          listener(key, null, senderId);
+        } else {
+          listener(key, null);
+        }
+      });
     } catch (error) {
       console.warn(`Failed to remove storage key "${key}":`, error);
     }
